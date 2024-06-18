@@ -23,4 +23,29 @@ public:
         makes sense to you.
     */
 
+private:
+    struct Node {
+        Node* parent = nullptr;         // Parent node
+        GridPos gridPos;	            // Grid position
+        float finalCost = 0.0f;	        // F = G + H
+        float givenCost = 0.0f;	        // G
+        bool onClosedList = false;
+        bool onOpenList = false;
+        bool operator<(const Node& other) const { return finalCost > other.finalCost; }
+    };
+
+    std::vector<Node> nodes;
+    std::vector<std::vector<Node*>> bucketOpenList; // Open list
+    std::vector<std::vector<GridPos>> precomputedNeighbors;
+
+    const int NUM_BUCKET = 80;
+    const float BUCKET_RANGE = 1.5f;
+
+    // Helper functions
+    void onMapChange();
+    int getBucketIndex(float fCost) const;
+    float calculateHeuristic(const GridPos& start, const GridPos& goal, PathRequest& request) const;
+    PathResult reconstructPath(Node* goalNode, PathRequest& request) const;
+
+
 };
