@@ -220,9 +220,6 @@
     <ClInclude Include="Source\Framework\UI\Elements\Buttons\UIDynamicButton.h">
       <Filter>Source\Framework\UI\Elements\Buttons</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Student\Project_2\P2_Pathfinding.h">
-      <Filter>Source\Student\Project_2</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Core\Serialization.h">
       <Filter>Source\Framework\Core</Filter>
     </ClInclude>
@@ -321,6 +318,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Core\AudioManager.h">
       <Filter>Source\Framework\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Student\Project_2\P2_Pathfinding.h">
+      <Filter>Source\Student\Project_2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -444,9 +444,6 @@
     <ClCompile Include="Source\Student\Project_3\P3_TerrainAnalysis.cpp">
       <Filter>Source\Student\Project_3</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Student\Project_2\P2_Pathfinding.cpp">
-      <Filter>Source\Student\Project_2</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Core\Serialization.cpp">
       <Filter>Source\Framework\Core</Filter>
     </ClCompile>
@@ -545,6 +542,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Core\AudioManager.cpp">
       <Filter>Source\Framework\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Student\Project_2\P2_Pathfinding.cpp">
+      <Filter>Source\Student\Project_2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

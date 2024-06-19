@@ -23,29 +23,34 @@ public:
         makes sense to you.
     */
 
-private:
-    struct Node {
-        Node* parent = nullptr;         // Parent node
-        GridPos gridPos;	            // Grid position
-        float finalCost = 0.0f;	        // F = G + H
-        float givenCost = 0.0f;	        // G
-        bool onClosedList = false;
-        bool onOpenList = false;
-        bool operator<(const Node& other) const { return finalCost > other.finalCost; }
+    enum class OnList
+    {
+        NONE,
+        OPEN,
+        CLOSED
     };
 
-    std::vector<Node> nodes;
-    std::vector<std::vector<Node*>> bucketOpenList; // Open list
-    std::vector<std::vector<GridPos>> precomputedNeighbors;
+    struct Node
+    {
+        Node* parent;   // Pointer to the parent node in the path
+        GridPos gridPos;          // Position of the node on the grid
+        float finalCost;         // f = g + h (total estimated cost)
+        float givenCost;         // g (cost from the start node to this node)
+        OnList onList;           // Indicates if the node is on the open or closed list
+    };
+    float AStarPather::calculateHeuristic(const GridPos& from, const GridPos& to, Heuristic heuristic, float weight) const;
 
-    const int NUM_BUCKET = 80;
-    const float BUCKET_RANGE = 1.5f;
 
-    // Helper functions
-    void onMapChange();
-    int getBucketIndex(float fCost) const;
-    float calculateHeuristic(const GridPos& start, const GridPos& goal, PathRequest& request) const;
-    PathResult reconstructPath(Node* goalNode, PathRequest& request) const;
+private:
+    static const int MAX_MAP_SIZE = 40; // Maximum map dimensions
+    Node nodes[MAX_MAP_SIZE][MAX_MAP_SIZE]; // Pre-allocated node array
+    std::vector<Node*> openList;
 
+    void addToOpenList(Node* node);
+    Node* getCheapestNode();
+    std::vector<GridPos> getNeighbors(const Node* node) const;
+    bool isValidPosition(const GridPos& pos) const;
+    float getMovementCost(const GridPos& from, const GridPos& to) const;
+    void resetNodes();
 
 };
