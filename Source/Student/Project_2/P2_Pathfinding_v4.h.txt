@@ -53,8 +53,4 @@ private:
     float getMovementCost(const GridPos& from, const GridPos& to) const;
     void resetNodes();
 
-    //void rubberbandPath(PathRequest& request);
-    //void reinsertWaypoints(PathRequest& request);
-    //void smoothPath(PathRequest& request);
-
 };

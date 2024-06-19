@@ -49,7 +49,6 @@ void AStarPather::shutdown()
 
 PathResult AStarPather::compute_path(PathRequest &request)
 {
-
     if (request.newRequest)
     {
         resetNodes();
@@ -71,7 +70,8 @@ PathResult AStarPather::compute_path(PathRequest &request)
         startNode.onList = OnList::OPEN;
         addToOpenList(&startNode);
     }
-    
+
+
     while (!openList.empty())
     {
         Node* current = getCheapestNode();
@@ -84,83 +84,7 @@ PathResult AStarPather::compute_path(PathRequest &request)
                 request.path.push_front(terrain->get_world_position(current->gridPos));
                 current = current->parent;
             }
-
-            if (request.settings.rubberBanding) {
-                auto it = request.path.begin();
-                while (it != request.path.end() && std::next(it, 2) != request.path.end()) {
-                    auto nextNextIt = std::next(it, 2);
-
-                    GridPos startPos = terrain->get_grid_position(*it);
-                    GridPos endPos = terrain->get_grid_position(*nextNextIt);
-
-                    bool wallFound = false;
-                    for (int r = std::min(startPos.row, endPos.row); r <= std::max(startPos.row, endPos.row); ++r) {
-                        for (int c = std::min(startPos.col, endPos.col); c <= std::max(startPos.col, endPos.col); ++c) {
-                            if (terrain->is_wall({ r, c })) {
-                                wallFound = true;
-                                break;
-                            }
-                        }
-                        if (wallFound) break;
-                    }
-
-                    if (!wallFound) {
-                        it = request.path.erase(std::next(it));
-                        it--;
-                    }
-                    else {
-						++it;
-					}
-                }
-            }
-            // TODO: check for beginning
-            if (request.settings.rubberBanding && request.settings.smoothing) {
-                auto it = request.path.begin();
-                while (it != request.path.end() && std::next(it) != request.path.end()) {
-                    Vec3 current = *it;
-                    Vec3 next = *std::next(it);
-                    float distance = (next - current).Length();
-
-                    float width = terrain->get_world_position({ 1, 0 }).x - terrain->get_world_position({ 0, 0 }).x;
-
-                    if (distance > 1.5f * width) {
-						int numPointsToAdd = static_cast<int>(distance / (1.5f * width));
-                        std::cout << numPointsToAdd << std::endl;
-						Vec3 step = (next - current) / static_cast<float>((numPointsToAdd + 1));
-
-						for (int i = 0; i < numPointsToAdd; ++i) {
-							it = request.path.insert(std::next(it), current + static_cast<float>((i + 1)) * step);
-						}
-					}
-                    ++it;
-                }
-            }
-
-            if (request.settings.smoothing && request.path.size() >= 4) {
-                WaypointList smoothedPath;
-                smoothedPath.push_back(request.path.front());
-
-                for (auto it = std::next(request.path.begin());
-                    std::next(it) != request.path.end();
-                    ++it) {
-                    Vec3 p0 = *std::prev(it);
-                    Vec3 p1 = *it;
-                    Vec3 p2 = *std::next(it);
-                    Vec3 p3 = *std::next(std::next(it));                    
-                    if (std::next(std::next(it)) == request.path.end()) {
-                        p3 = *std::next(it);
-                    }
-
-                    for (float t = 0.0f; t < 1.0f; t += 0.25f) {
-                        Vec3 point = XMVectorCatmullRom(p0, p1, p2, p3, t);
-                        smoothedPath.push_back(point);
-                    }
-                }
-                smoothedPath.push_back(request.path.back());
-                request.path = smoothedPath;
-            }
             request.newRequest = true;
-
             return PathResult::COMPLETE;
         }
 
@@ -185,6 +109,8 @@ PathResult AStarPather::compute_path(PathRequest &request)
                 neighbor->onList = OnList::OPEN;
                 addToOpenList(neighbor);
                 terrain->set_color(neighborPos, Colors::Blue);
+
+
             }
             else if (neighbor->onList == OnList::NONE || newGivenCost < neighbor->givenCost)
             {
@@ -206,6 +132,7 @@ PathResult AStarPather::compute_path(PathRequest &request)
 
     return PathResult::IMPOSSIBLE;
 }
+
 
 float AStarPather::calculateHeuristic(const GridPos& from, const GridPos& to, Heuristic heuristic, float weight) const
 {
@@ -277,6 +204,7 @@ std::vector<GridPos> AStarPather::getNeighbors(const Node* node) const
     return neighbors;
 }
 
+
 bool AStarPather::isValidPosition(const GridPos& pos) const
 {
     return (pos.row >= 0 && pos.row < MAX_MAP_SIZE) &&
@@ -315,86 +243,3 @@ void AStarPather::resetNodes()
     }
 
 }
-//
-//void AStarPather::rubberbandPath(PathRequest& request)
-//{
-//    auto it = request.path.begin();
-//    while (it != request.path.end() && std::next(it) != request.path.end())
-//    {
-//        auto nextIt = std::next(it);
-//        while (nextIt != request.path.end())
-//        {
-//            // Iterate over grid positions between *it and *nextIt
-//            GridPos startPos = terrain->get_grid_position(*it);
-//            GridPos endPos = terrain->get_grid_position(*nextIt);
-//
-//            bool wallFound = false;
-//            for (int r = std::min(startPos.row, endPos.row); r <= std::max(startPos.row, endPos.row); ++r)
-//            {
-//                for (int c = std::min(startPos.col, endPos.col); c <= std::max(startPos.col, endPos.col); ++c)
-//                {
-//                    if (terrain->is_wall({ r, c }))
-//                    {
-//                        wallFound = true;
-//                        break;
-//                    }
-//                }
-//                if (wallFound) break;
-//            }
-//
-//            if (!wallFound) // No wall in line of sight
-//            {
-//                it = request.path.erase(std::next(it), nextIt);
-//                break;
-//            }
-//            ++nextIt;
-//        }
-//        ++it;
-//    }
-//}
-//
-//void AStarPather::reinsertWaypoints(PathRequest& request)
-//{
-//    auto it = request.path.begin();
-//    while (it != request.path.end() && std::next(it) != request.path.end())
-//    {
-//        Vec3 current = *it;
-//        Vec3 next = *std::next(it);
-//        float distance = (next - current).Length();
-//
-//        if (distance > 1.5f * Terrain::mapSizeInWorld)
-//        {
-//            int numPointsToAdd = static_cast<int>(distance / (1.5f * Terrain::mapSizeInWorld));
-//            Vec3 step = (next - current) / static_cast<float>((numPointsToAdd + 1));
-//
-//            for (int i = 0; i < numPointsToAdd; ++i)
-//            {
-//                it = request.path.insert(std::next(it), current + static_cast<float>((i + 1)) * step);
-//            }
-//        }
-//        ++it;
-//    }
-//}
-
-//void AStarPather::smoothPath(PathRequest& request)
-//{
-//    WaypointList smoothedPath;
-//    smoothedPath.push_back(request.path.front()); 
-//
-//    for (auto it = std::next(request.path.begin()); it != request.path.end() && std::next(it) != request.path.end(); ++it)
-//    {
-//        Vec3 p0 = *std::prev(it);
-//        Vec3 p1 = *it;
-//        Vec3 p2 = *std::next(it);
-//        Vec3 p3 = *std::next(std::next(it));
-//
-//        for (float t = 0.0f; t <= 1.0f; t += 0.1f) 
-//        {
-//            Vec3 point = XMVectorCatmullRom(p0, p1, p2, p3, t);
-//            smoothedPath.push_back(point);
-//        }
-//    }
-//
-//    smoothedPath.push_back(request.path.back()); 
-//    request.path = smoothedPath;
-//}
