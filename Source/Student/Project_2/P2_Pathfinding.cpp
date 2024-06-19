@@ -49,7 +49,6 @@ void AStarPather::shutdown()
 
 PathResult AStarPather::compute_path(PathRequest &request)
 {
-    // Initialization (only if new request or single step is disabled)
     if (request.newRequest)
     {
         resetNodes();
@@ -61,7 +60,7 @@ PathResult AStarPather::compute_path(PathRequest &request)
         // Check if start or goal positions are valid
         if (!isValidPosition(startPos) || !isValidPosition(goalPos))
         {
-            return PathResult::IMPOSSIBLE; // Invalid start or goal
+            return PathResult::IMPOSSIBLE; 
         }
 
         Node& startNode = nodes[startPos.row][startPos.col];
@@ -106,7 +105,7 @@ PathResult AStarPather::compute_path(PathRequest &request)
                 // Re-open the node
                 neighbor->onList = OnList::OPEN;
                 addToOpenList(neighbor);
-                terrain->set_color(neighborPos, Colors::Blue); // Re-color as open
+                terrain->set_color(neighborPos, Colors::Blue);
 
                 // Update finalCost and parent
                 neighbor->finalCost = newFinalCost;
@@ -114,14 +113,12 @@ PathResult AStarPather::compute_path(PathRequest &request)
             }
             else if (neighbor->onList == OnList::NONE || newGivenCost < neighbor->givenCost)
             {
-                // Normal neighbor processing
                 neighbor->parent = current;
                 neighbor->givenCost = newGivenCost;
                 neighbor->finalCost = newFinalCost;
                 neighbor->onList = OnList::OPEN;
                 addToOpenList(neighbor);
 
-                // Color the open node blue
                 terrain->set_color(neighborPos, Colors::Blue);
             }
         }

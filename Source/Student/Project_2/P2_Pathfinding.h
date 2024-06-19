@@ -32,18 +32,18 @@ public:
 
     struct Node
     {
-        Node* parent;   // Pointer to the parent node in the path
-        GridPos gridPos;          // Position of the node on the grid
+        Node* parent;  
+        GridPos gridPos;        
         float finalCost;         // f = g + h (total estimated cost)
         float givenCost;         // g (cost from the start node to this node)
-        OnList onList;           // Indicates if the node is on the open or closed list
+        OnList onList;      
     };
     float AStarPather::calculateHeuristic(const GridPos& from, const GridPos& to, Heuristic heuristic, float weight) const;
 
 
 private:
-    static const int MAX_MAP_SIZE = 40; // Maximum map dimensions
-    Node nodes[MAX_MAP_SIZE][MAX_MAP_SIZE]; // Pre-allocated node array
+    static const int MAX_MAP_SIZE = 40;     // Maximum map dimensions
+    Node nodes[MAX_MAP_SIZE][MAX_MAP_SIZE];
     std::vector<Node*> openList;
 
     void addToOpenList(Node* node);
